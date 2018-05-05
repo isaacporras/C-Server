@@ -9,23 +9,23 @@ using namespace std;
     #include <QtCore>
     #include <QXmlStreamWriter>
     #include <QXmlStreamReader>
+    #include <QDomNodeList>
+    #include <QDomDocument>
 
 
-        class Server: public QTcpServer
-        {
+class Server: public QTcpServer
+{
+    Q_OBJECT
+    public:
 
-            Q_OBJECT
-            public:
-
-              Server(QObject * parent = 0 , quint16 port = 3534);
+              Server(QObject * parent = 0 , quint16 port = 1232);
               virtual  ~Server();
-
-            private slots:
-
-              void acceptConnection();
+private slots:
               void startRead();
+              void acceptConnection();
+
               void disconnected();
-//              void analize_XML(string xml);
+              void analize_XML(string xml);
             public:
 
               QTcpSocket * client;
@@ -33,5 +33,4 @@ using namespace std;
 
         };
 
-
-    #endif // SERVER_H
+#endif // SERVER_H

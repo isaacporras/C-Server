@@ -44,24 +44,26 @@
             }
 
 
-            QString string1;
+            QString string1 = line.toUtf8().constData();
             QXmlStreamReader reader(string1);
             QXmlStreamWriter writer(&string1);
-            // use QXmlStreamWriter class to generate the XML
-            writer.setAutoFormatting(true);
-            writer.writeStartDocument();
+//            // use QXmlStreamWriter class to generate the XML
+//            writer.setAutoFormatting(true);
+//            writer.writeStartDocument();
 
-            writer.writeStartElement("xml");
-            writer.writeStartElement("Data");
-            writer.writeAttribute("Message", line.toUtf8().constData());
-            writer.writeCharacters("Mi mensaje");
-            writer.writeEndElement();
-            writer.writeEndElement();
-            writer.writeEndDocument();
+//            writer.writeStartElement("xml");
+//            writer.writeStartElement("Data");
+//            writer.writeAttribute("Message", line.toUtf8().constData());
+//            writer.writeCharacters("Mi mensaje");
+//            writer.writeEndElement();
+//            writer.writeEndElement();
+//            writer.writeEndDocument();
             cout << "Client :\n" << string1.toStdString() << endl;
-            string str2 =  string1.toStdString();
-            QString str = QString::fromUtf8(str2.c_str());
-            client->write(("I've have recieved the message:" + str ).toUtf8());
+
+
+            analize_XML(string1.toStdString());
+
+            client->write(("I've have recieved the message:" + string1 ).toUtf8());
             client->waitForBytesWritten(3000);
         }
 
@@ -76,3 +78,28 @@
         client->waitForBytesWritten(3000);
     }
 
+    void Server::analize_XML(string xml){
+
+        QXmlStreamReader reader(QString::fromUtf8(xml.c_str()));
+
+        if (reader.readNextStartElement()) {
+            cout<<"Inside first if"<<endl;
+                if (reader.name() == "Message"){
+                    while(reader.readNextStartElement()){
+                        if(reader.name() == "Cancion"){
+                            QString s = reader.readElementText();
+                            if(s == "Close"){
+                                servidor->close();
+                                servidor->acceptConnection();
+
+                            }
+                            cout<<"Info inside message:" << s.toStdString() <<endl;
+                        }
+                        else
+                            reader.skipCurrentElement();
+                    }
+                }
+                else
+                    reader.raiseError(QObject::tr("Incorrect file"));
+            }
+   }
