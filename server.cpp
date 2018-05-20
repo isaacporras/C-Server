@@ -3,11 +3,8 @@
 #include <iostream>
 
 #include <string>
+#include <QDomDocument>
 
-///
-/// Clase Server
-/// Encargada de la administración de las variables y del manejo de la memoria. Se comunica con la clase Client.
-///
 
 using namespace std;
 
@@ -31,10 +28,7 @@ using namespace std;
       close();
     }
 
-    ///
-    ///  Método -> acceptConnection
-    ///  Inicia la comunicación con algún cliente que la esté solicitando
-    ///
+
 
     void Server::acceptConnection()
     {
@@ -46,10 +40,7 @@ using namespace std;
       qDebug() << "New client from:" << client->peerAddress().toString();
     }
 
-    ///
-    ///  Método -> startRead
-    ///  Lee la información en JSON enviada por el cliente.
-    ///
+
 
     void Server::startRead()
     {
@@ -63,28 +54,64 @@ using namespace std;
             QString message = "I have received the message:" + line.toUtf8();
             qDebug() << message;
             sendMessage(message);
+            readXML(line);
+
 
         }
     }
 
 
-    ///
-    ///  Método -> sendMessage
-    ///  Parámetro -> data
-    ///  Envía la información data, que contiene los resultados de la administración de memoria
-    ///
+
 
     void Server::sendMessage(QString data){
         client->write(QString(data+"\n").toUtf8());
         client->waitForBytesWritten(1000);
     }
 
-    ///
-    ///  Método -> disconnected
-    ///  Notifica cuando el Cliente actual pierde la comunicación.
-    ///
+
 
     void Server::disconnected()
     {
         qDebug() << "Client disconnected:" << client->peerAddress().toString();
     }
+
+    void Server::readXML(QString XML){
+        QDomDocument doc;
+        doc.setContent(XML);
+
+        QDomElement operation = doc.documentElement();
+
+        QString startTag = operation.tagName();
+
+        qDebug()<<"The ROOT tag is"<<startTag;
+
+        QDomElement username = operation.firstChild().toElement();
+        QString data = username.tagName();
+
+
+        qDebug()<<"The FirstChild is"<<data;
+        qDebug()<<"The operation code is:"<< operation.attribute("ID");
+
+//        QDomElement usernameElement = operation.firstChild().toElement();
+
+        QString UserName = username.firstChild().toText().data();
+        qDebug()<<"The username is: "<< UserName;
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

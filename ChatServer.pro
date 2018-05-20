@@ -3,6 +3,7 @@ QT += network
 QT += xml
 QT += core
 
+
 CONFIG += c++11 console
 CONFIG -= app_bundle
 
