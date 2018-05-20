@@ -21,7 +21,7 @@ class Server: public QTcpServer
     Q_OBJECT
 public:
 
-    Server(QObject * parent = 0 , quint16 port = 1959);
+    Server(QObject * parent = 0 , quint16 port = 1654);
     virtual  ~Server();
     void sendMessage(QString data);
     void readXML(QString XML);

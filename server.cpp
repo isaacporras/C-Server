@@ -76,26 +76,68 @@ using namespace std;
     }
 
     void Server::readXML(QString XML){
+
         QDomDocument doc;
         doc.setContent(XML);
 
         QDomElement operation = doc.documentElement();
-
-        QString startTag = operation.tagName();
-
-        qDebug()<<"The ROOT tag is"<<startTag;
-
-        QDomElement username = operation.firstChild().toElement();
-        QString data = username.tagName();
-
-
-        qDebug()<<"The FirstChild is"<<data;
+        QString OperationTag = operation.tagName();
+        qDebug()<<"The root tag is"<< OperationTag;
         qDebug()<<"The operation code is:"<< operation.attribute("ID");
 
-//        QDomElement usernameElement = operation.firstChild().toElement();
+        QDomNode n = operation.firstChild();
 
-        QString UserName = username.firstChild().toText().data();
+        //Comienza a leer los campos del XML//
+        //***********************************************************//
+        QDomElement usernameElement = n.toElement();
+
+        QString UserName = usernameElement.firstChild().toText().data();
+
+
         qDebug()<<"The username is: "<< UserName;
+
+        //***********************************************************//
+
+        QDomElement NameElement = n.nextSibling().toElement();
+
+        QString Name = NameElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Name is: "<< Name;
+
+        //***********************************************************//
+
+        QDomElement AgeElement = n.nextSibling().nextSibling().toElement();
+
+        QString Age = AgeElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Age is: "<< Age;
+
+        //***********************************************************//
+
+        QDomElement PasswordElement = n.nextSibling().nextSibling().nextSibling().toElement();
+
+        QString PassWord = PasswordElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Password is: "<< PassWord;
+
+        //***********************************************************//
+
+        QDomElement FavGenElement = n.nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Genero = FavGenElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Genero is: "<< Genero;
+
+
+
+
+
+
+
 
 
         }
