@@ -6,6 +6,7 @@
 #include <QDomDocument>
 
 
+
 using namespace std;
 
     Server::Server(QObject* parent , quint16 port): QTcpServer(parent)
@@ -20,6 +21,7 @@ using namespace std;
       if (!this->listen(QHostAddress::Any, port)) {
               qDebug() << "ERROR";
           }
+     Usuarios_Tree = new UsersDB_Tree();
     }
 
     Server::~Server()
@@ -132,10 +134,12 @@ using namespace std;
 
         qDebug()<<"The Genero is: "<< Genero;
 
+        //Ingresa el usuario en el arbol //
+        Usuarios_Tree->insertarNodo(UserName,Name,Age,Genero,PassWord);
+        //Imprime el arbol para verificar que se inserto //
+        Usuarios_Tree->recorridoPreOrder(Usuarios_Tree->getRoot());
 
-
-
-
+        qDebug()<<"Se terminó de recorrer";
 
 
 

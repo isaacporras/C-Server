@@ -7,6 +7,7 @@
 #include <QtNetwork/QTcpSocket>
 #include <iostream>
 #include <string>
+#include "usersdb_tree.h"
 using namespace std;
 
 
@@ -20,8 +21,8 @@ class Server: public QTcpServer
 
     Q_OBJECT
 public:
-
-    Server(QObject * parent = 0 , quint16 port = 1654);
+    UsersDB_Tree *Usuarios_Tree;
+    Server(QObject * parent = 0 , quint16 port = 1615);
     virtual  ~Server();
     void sendMessage(QString data);
     void readXML(QString XML);

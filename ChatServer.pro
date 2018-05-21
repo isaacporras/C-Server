@@ -22,4 +22,6 @@ SOURCES += main.cpp \
     server.cpp
 
 HEADERS += \
-    server.h
+    server.h \
+    usersdb_tree.h \
+    usernode.h
