@@ -131,6 +131,15 @@ public:
 
             return 0;
     }
+    QString buscarContraseña(UserNode *nodo,QString user_name){
+        if(nodo){
+            if(nodo->username == user_name){
+                return nodo->password;
+            }
+            buscarContraseña(nodo->left,user_name);
+            buscarContraseña(nodo->right,user_name);
+        }
+    }
 
 
 public:

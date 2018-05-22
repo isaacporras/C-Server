@@ -49,14 +49,27 @@ using namespace std;
         while(client->canReadLine())
         {
             QString line = QString::fromUtf8(client->readAll().trimmed());
-            if(line == "Close"){
-
-            }
             cout << "Client :\n" << line.toUtf8().constData() << endl;
+
+            QDomDocument doc;
+            doc.setContent(line);
+
+            QDomElement operation = doc.documentElement();
+            QString OperationTag = operation.tagName();
+
+            qDebug()<<"The operation code is:"<< operation.attribute("ID");
+
             QString message = "I have received the message:" + line.toUtf8();
             qDebug() << message;
-            sendMessage(message);
-            readXML(line);
+//            sendMessage(message);
+            readXML_to_Regist(line);
+            if(OperationTag == "1"){
+
+            }
+            else if (OperationTag == "2"){
+                Search_User_Login(line);
+            }
+
 
 
         }
@@ -66,8 +79,51 @@ using namespace std;
 
 
     void Server::sendMessage(QString data){
+
         client->write(QString(data+"\n").toUtf8());
-        client->waitForBytesWritten(1000);
+        client->waitForBytesWritten(10000);
+    }
+    void Server::Search_User_Login(QString XML){
+
+        QDomDocument doc;
+        doc.setContent(XML);
+
+        QDomElement operation = doc.documentElement();
+        QString OperationTag = operation.tagName();
+
+
+        QDomNode n = operation.firstChild();
+
+        //Lee el usuario del XML//
+        //***********************************************************//
+
+        QDomElement usernameElement = n.toElement();
+
+        QString UserName = usernameElement.firstChild().toText().data();
+
+
+        qDebug()<<"The username is: "<< UserName;
+
+        QDomElement password = n.nextSibling().toElement();
+
+        QString contrasena = password.firstChild().toText().data();
+
+
+        qDebug()<<"La contrasena digitada: "<< contrasena;
+
+        QString encontrado = Usuarios_Tree->buscarUsuario(Usuarios_Tree->root,UserName);
+        if(encontrado == "true"){
+            QString contrasena_encontrada = Usuarios_Tree->buscarContraseña(Usuarios_Tree->root,UserName);
+            if(contrasena == contrasena_encontrada){
+                sendMessage("true");
+            }
+            else{
+                sendMessage("false");
+            }
+        }
+        else{
+            sendMessage("false");
+        }
     }
 
 
@@ -77,7 +133,7 @@ using namespace std;
         qDebug() << "Client disconnected:" << client->peerAddress().toString();
     }
 
-    void Server::readXML(QString XML){
+    void Server::readXML_to_Regist(QString XML){
 
         QDomDocument doc;
         doc.setContent(XML);
@@ -137,7 +193,10 @@ using namespace std;
         QString encontrado = Usuarios_Tree->buscarUsuario(Usuarios_Tree->root,UserName);
         qDebug()<<"Se encontro en el arbol: " << encontrado;
         //Ingresa el usuario en el arbol //
+        if(encontrado == "false"){
         Usuarios_Tree->insertarNodo(UserName,Name,Age,Genero,PassWord);
+        }
+
         //Imprime el arbol para verificar que se inserto //
         Usuarios_Tree->recorridoPreOrder(Usuarios_Tree->getRoot());
 
@@ -172,7 +231,7 @@ using namespace std;
 
         QDomDocument xml_respuesta_buscado;
         QDomElement root = xml_respuesta_buscado.createElement("OperationCode");
-        root.setAttribute("ID","2");
+        root.setAttribute("ID","90");
         xml_respuesta_buscado.appendChild(root);
 
 //        QDomAttr atributo = xml_respuesta_buscado.createAttribute("ID");
@@ -184,10 +243,10 @@ using namespace std;
         QDomText t = xml_respuesta_buscado.createTextNode(encontrado);
         tag.appendChild(t);
 
-        QString xml_to_print = xml_respuesta_buscado.toString();
-        qDebug() << "(Servidor) La respuesta a buscado es:" << xml_to_print;
 
-//        sendMessage(xml_respuesta_buscado.toString());
+        qDebug() << "(Servidor) La respuesta a buscado es:" << xml_respuesta_buscado.toString();
+
+        sendMessage(encontrado);
 
     }
 
