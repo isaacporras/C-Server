@@ -99,7 +99,7 @@ class UsersDB_Tree {
             }
         }
     public:
-        \
+
         void recorridoPreOrder(UserNode *nodo){
             if(nodo != 0){
                 std::cout << "El recorrido del arbol es: " << nodo->username.toStdString() << std::endl;
@@ -107,6 +107,31 @@ class UsersDB_Tree {
                 recorridoPreOrder(nodo->right);
             }
         }
+
+public:
+
+public:
+
+    QString buscarUsuario(UserNode *nodo, QString username_buscado){
+        int repeticiones = encontrar_repeticiones(nodo,username_buscado);
+        if(repeticiones == 0){
+            return "false";
+        }
+        else if(repeticiones!= 0){
+            return "true";
+        }
+    }
+    int encontrar_repeticiones(UserNode *nodo, QString username_buscado){
+        if (nodo)
+            {
+                return encontrar_repeticiones(nodo->left, username_buscado) +
+                       encontrar_repeticiones(nodo->right, username_buscado) +
+                       (nodo->username == username_buscado ? 1 : 0);
+            }
+
+            return 0;
+    }
+
 
 public:
         UserNode *recorrerIzquierda(UserNode* nodo) {

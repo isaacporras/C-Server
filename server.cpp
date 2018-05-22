@@ -134,6 +134,8 @@ using namespace std;
 
         qDebug()<<"The Genero is: "<< Genero;
 
+        QString encontrado = Usuarios_Tree->buscarUsuario(Usuarios_Tree->root,UserName);
+        qDebug()<<"Se encontro en el arbol: " << encontrado;
         //Ingresa el usuario en el arbol //
         Usuarios_Tree->insertarNodo(UserName,Name,Age,Genero,PassWord);
         //Imprime el arbol para verificar que se inserto //
@@ -141,13 +143,53 @@ using namespace std;
 
         qDebug()<<"Se terminó de recorrer";
 
+        Send_Buscado_Answer(XML, encontrado);
+
+
 
 
 
         }
 
+    void Server::Send_Buscado_Answer(QString XML,QString encontrado){
+
+        QDomDocument doc;
+        doc.setContent(XML);
+
+        QDomElement operation = doc.documentElement();
+
+        QDomNode n = operation.firstChild();
+
+        //Lee el nombre de usuario que se busca XML//
+        //***********************************************************//
+        QDomElement usernameElement_Buscado = n.toElement();
+
+        QString UserName_Buscado = usernameElement_Buscado.firstChild().toText().data();
+
+        //***********************************************************//
+
+        //Crea el documento que va a enviar //
+
+        QDomDocument xml_respuesta_buscado;
+        QDomElement root = xml_respuesta_buscado.createElement("OperationCode");
+        root.setAttribute("ID","2");
+        xml_respuesta_buscado.appendChild(root);
+
+//        QDomAttr atributo = xml_respuesta_buscado.createAttribute("ID");
 
 
+        QDomElement tag = xml_respuesta_buscado.createElement("Encontrado");
+        root.appendChild(tag);
+
+        QDomText t = xml_respuesta_buscado.createTextNode(encontrado);
+        tag.appendChild(t);
+
+        QString xml_to_print = xml_respuesta_buscado.toString();
+        qDebug() << "(Servidor) La respuesta a buscado es:" << xml_to_print;
+
+//        sendMessage(xml_respuesta_buscado.toString());
+
+    }
 
 
 
