@@ -62,11 +62,11 @@ using namespace std;
             QString message = "I have received the message:" + line.toUtf8();
             qDebug() << message;
 //            sendMessage(message);
-            readXML_to_Regist(line);
-            if(OperationTag == "1"){
 
+            if(operation.attribute("ID") == "1"){
+                readXML_to_Regist(line);
             }
-            else if (OperationTag == "2"){
+            else if (operation.attribute("ID") == "2"){
                 Search_User_Login(line);
             }
 
@@ -231,7 +231,7 @@ using namespace std;
 
         QDomDocument xml_respuesta_buscado;
         QDomElement root = xml_respuesta_buscado.createElement("OperationCode");
-        root.setAttribute("ID","90");
+        root.setAttribute("ID","2");
         xml_respuesta_buscado.appendChild(root);
 
 //        QDomAttr atributo = xml_respuesta_buscado.createAttribute("ID");
@@ -249,6 +249,10 @@ using namespace std;
         sendMessage(encontrado);
 
     }
+
+
+
+
 
 
 
