@@ -61,13 +61,18 @@ using namespace std;
 
             QString message = "I have received the message:" + line.toUtf8();
             qDebug() << message;
-//            sendMessage(message);
 
             if(operation.attribute("ID") == "1"){
+                //Se quiere registrar un usuario
                 readXML_to_Regist(line);
             }
             else if (operation.attribute("ID") == "2"){
+                //El cliente mando a buscar al servidor(Se usa cuando se quiere loggear)//
                 Search_User_Login(line);
+            }
+            else if (operation.attribute("ID") == "3"){
+                //Se esta intentando cargar una cancion //
+                cout<<"Se quiere ingresar una cancion"<<endl;
             }
 
 
@@ -112,12 +117,18 @@ using namespace std;
         qDebug()<<"La contrasena digitada: "<< contrasena;
 
         QString encontrado = Usuarios_Tree->buscarUsuario(Usuarios_Tree->root,UserName);
+
+        cout<<"Encontrado: " << encontrado.toStdString() <<endl;
+        QString contrasena_encontrada = "no se ha inicializado la busqueda";
+
+
         if(encontrado == "true"){
-            QString contrasena_encontrada = Usuarios_Tree->buscarContraseña(Usuarios_Tree->root,UserName);
-            if(contrasena == contrasena_encontrada){
+            contrasena_encontrada = Usuarios_Tree->buscarContraseña(Usuarios_Tree->root,contrasena , UserName);
+            cout<<"Contrasena encontrada: " << contrasena_encontrada.toStdString() <<endl;
+            if(contrasena_encontrada == "true"){
                 sendMessage("true");
             }
-            else{
+            else if(contrasena_encontrada == "false"){
                 sendMessage("false");
             }
         }

@@ -131,13 +131,23 @@ public:
 
             return 0;
     }
-    QString buscarContraseña(UserNode *nodo,QString user_name){
-        if(nodo){
-            if(nodo->username == user_name){
-                return nodo->password;
+    int encontrar_repeticiones_contrasena(UserNode *nodo, QString contrasena ,QString username_buscado){
+        if (nodo)
+            {
+                return encontrar_repeticiones_contrasena(nodo->left, contrasena, username_buscado) +
+                       encontrar_repeticiones_contrasena(nodo->right, contrasena, username_buscado) +
+                       (nodo->username == username_buscado && nodo->password == contrasena ? 1 : 0);
             }
-            buscarContraseña(nodo->left,user_name);
-            buscarContraseña(nodo->right,user_name);
+
+            return 0;
+    }
+    QString buscarContraseña(UserNode *nodo,QString contrasena, QString username_buscado ){
+        int repeticiones = encontrar_repeticiones_contrasena(nodo,contrasena , username_buscado);
+        if(repeticiones == 0){
+            return "false";
+        }
+        else if(repeticiones!= 0){
+            return "true";
         }
     }
 
