@@ -22,12 +22,13 @@ class Server: public QTcpServer
     Q_OBJECT
 public:
     UsersDB_Tree *Usuarios_Tree;
-    Server(QObject * parent = 0 , quint16 port = 1366);
+    Server(QObject * parent = 0 , quint16 port = 1369);
     virtual  ~Server();
     void sendMessage(QString data);
     void readXML_to_Regist(QString XML);
     void Send_Buscado_Answer(QString xml,QString encontrado);
     void Search_User_Login(QString XML);
+    void saveSong(QString xml);
 
 private slots:
 

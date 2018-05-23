@@ -73,12 +73,80 @@ using namespace std;
             else if (operation.attribute("ID") == "3"){
                 //Se esta intentando cargar una cancion //
                 cout<<"Se quiere ingresar una cancion"<<endl;
+                saveSong(line);
+
             }
-
-
 
         }
     }
+    void Server::saveSong(QString xml){
+
+
+        QDomDocument doc;
+        doc.setContent(xml);
+
+        QDomElement operation = doc.documentElement();
+        QString OperationTag = operation.tagName();
+        qDebug()<<"The root tag is"<< OperationTag;
+        qDebug()<<"The operation code is:"<< operation.attribute("ID");
+
+        QDomNode n = operation.firstChild();
+
+        //Lee los bytes del XML//
+        //***********************************************************//
+        QDomElement SongBytesElement = n.toElement();
+
+        QString SongBytes = SongBytesElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Bytes of the song are is: "<< SongBytes;
+
+        //***********************************************************//
+
+        QDomElement GeneroElement = n.nextSibling().toElement();
+
+        QString Genero = GeneroElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Genero is: "<< Genero;
+
+        //***********************************************************//
+
+        QDomElement ArtistaElement = n.nextSibling().nextSibling().toElement();
+
+        QString Artista = ArtistaElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Artista is: "<< Artista;
+
+        //***********************************************************//
+
+        QDomElement AlbumElement = n.nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Album = AlbumElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Album is: "<< Album;
+
+        //***********************************************************//
+
+        QDomElement YearElement = n.nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Year = YearElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Year is: "<< Year;
+
+        //***********************************************************//
+
+        QDomElement LetraElement = n.nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Letra = LetraElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Letra is: "<< Letra;
+    }
+
 
 
 
