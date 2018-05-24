@@ -2,6 +2,7 @@ QT -= gui
 QT += network
 QT += xml
 QT += core
+QT += testlib
 
 
 CONFIG += c++11 console

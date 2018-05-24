@@ -5,7 +5,7 @@
 #include <string>
 #include <QDomDocument>
 #include <json_handler.h>
-
+#include <QTest>
 
 using namespace std;
 
@@ -40,6 +40,7 @@ using namespace std;
       connect(client, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
       qDebug() << "New client from:" << client->peerAddress().toString();
+
 
     }
 
@@ -83,13 +84,42 @@ using namespace std;
                 addNewPlaylist(line);
 
             }
+            else if (operation.attribute("ID") == "5"){
+                //Peticion para saber que playlists existen//
+                cout<<"Se quiere ingresar una cancion"<<endl;
+                QDir dir(QDir::currentPath() + "/PlayLists");
+                QStringList list = dir.entryList(QDir::AllEntries | QDir::Dirs);
+                if(list.isEmpty()){
+                    cout<<"finished"<<endl;
+                    sendMessage("finished");
+                    return;
+                }
+                else{
+                int i = 1;
+                while(i < list.size())
+
+                {
+                    QTest::qSleep (100);
+                    cout<<"Playlistname: "<<list.at(i).toStdString()<<endl;
+
+                    sendMessage(list.at(i));
+                    i = i + 1;
+
+                }
+                QTest::qSleep (100);
+                cout<<"finished"<<endl;
+                sendMessage("finished");
+                }
+            }
+
             else if (operation.attribute("ID") == "13"){
                 //Se esta intentando reproducir una cancion //
                 cout<<"Se quiere reproducir una cancion"<<endl;
                 playSong(line);
 
-            }
 
+
+            }
         }
     }
 
@@ -149,6 +179,7 @@ using namespace std;
      * @brief Server::addNewPlaylist
      */
     void Server::addNewPlaylist(QString XML){
+
         QDomDocument doc;
         doc.setContent(XML);
 
@@ -260,7 +291,19 @@ using namespace std;
 
 
         qDebug()<<"The Playlist is: "<< Playlist;
+
+        generateMP3(SongBytes,Playlist);
+
     }
+    void Server::generateMP3(QString data, QString carpeta){
+
+            QString information = data;
+                    QByteArray array = QByteArray::fromBase64(information.toLocal8Bit().trimmed());
+                    QFile file("/Users/IsaacPorras/Parser-Interface/build-ChatServer-Desktop_Qt_5_10_1_clang_64bit-Profile/PlayLists/Isaac/Test.mp3");
+                    file.open(QIODevice::WriteOnly);
+                    file.write(array);
+                    file.close();
+        }
 
 
 

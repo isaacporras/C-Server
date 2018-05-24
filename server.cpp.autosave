@@ -5,7 +5,7 @@
 #include <string>
 #include <QDomDocument>
 #include <json_handler.h>
-
+#include <QTest>
 
 using namespace std;
 
@@ -40,15 +40,7 @@ using namespace std;
       connect(client, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
       qDebug() << "New client from:" << client->peerAddress().toString();
-      QDir dir(QDir::currentPath());
-      
-      QStringList list = dir.entryList(QDir::AllEntries | QDir::Dirs);
-      
-      for (int i = 1; i < list.size(); i++)
-      {
-          sendMessage(list.at(i));
-         
-      }
+
 
     }
 
@@ -92,14 +84,102 @@ using namespace std;
                 addNewPlaylist(line);
 
             }
+            else if (operation.attribute("ID") == "5"){
+                //Peticion para saber que playlists existen//
+                cout<<"Se quiere ingresar una cancion"<<endl;
+                QDir dir(QDir::currentPath() + "/PlayLists");
+                QStringList list = dir.entryList(QDir::AllEntries | QDir::Dirs);
+                if(list.isEmpty()){
+                    cout<<"finished"<<endl;
+                    sendMessage("finished");
+                    return;
+                }
+                else{
+                int i = 1;
+                while(i < list.size())
 
+                {
+                    QTest::qSleep (100);
+                    cout<<"Playlistname: "<<list.at(i).toStdString()<<endl;
+
+                    sendMessage(list.at(i));
+                    i = i + 1;
+
+                }
+                QTest::qSleep (100);
+                cout<<"finished"<<endl;
+                sendMessage("finished");
+                }
+            }
+
+            else if (operation.attribute("ID") == "13"){
+                //Se esta intentando reproducir una cancion //
+                cout<<"Se quiere reproducir una cancion"<<endl;
+                playSong(line);
+
+
+
+            }
         }
     }
+
+    void Server::playSong(QString line){
+
+        ///
+        /// Se necesita analizar el XML (line) y obtener un parámetro especial que indica el chunk cargado en el
+        /// cliente. Éste le ayuda al servidor para saber cuantos chunks se debe saltar y cual seleccionar para,
+        /// enviarlo al cliente.
+        ///
+
+        int counter = 0;
+        if (line != "0"){
+            counter = line.toInt();
+        }
+
+        string messageRecived = line.toStdString();
+
+        //cout << "Client :\n" << messageRecived << endl;
+
+        QString str1 = QString("FUNCIONA....");
+
+        ///
+        /// El path para la canción (fileName) debe referenciar a la carpeta preasignada para guardar los MP3.
+        ///
+
+        QString fileName = "/home/estebandcg1999/Downloads/Progra#2 - Interfaz/MP3/Bella.mp3";
+        QFile file(fileName);
+        if (!file.open(QIODevice::ReadOnly)){
+
+            ///
+            /// Hay que indicar un mensaje de error en caso de no poder acceder/abrir el archivo, ya que existe un
+            /// thread en el servidor abierto esperando por una respuesta.
+            ///
+
+            return;
+        }
+
+        QByteArray array = file.readAll();
+
+        QString information = array.mid(195500*counter,200000).toBase64().constData();
+        file.close();
+
+        ///
+        /// El XML a enviar (information) debe contener el chunk de bytes para ser reproducido en el servidor.
+        ///
+
+        sendMessage(information);
+
+        /*QString str = QString::fromUtf8(messageRecived.c_str());
+        client->write(("I've have recieved the message:" + str ).toUtf8());*/
+
+    }
+
+
     /**Crea una carpeta con las canciones del playlist request //
      * @brief Server::addNewPlaylist
      */
     void Server::addNewPlaylist(QString XML){
-        
+
         QDomDocument doc;
         doc.setContent(XML);
 
@@ -211,7 +291,19 @@ using namespace std;
 
 
         qDebug()<<"The Playlist is: "<< Playlist;
+
+        generateMP3(SongBytes,Playlist);
+
     }
+    void Server::generateMP3(QString data, QString carpeta,QString nombre){
+
+            QString information = data;
+                    QByteArray array = QByteArray::fromBase64(information.toLocal8Bit().trimmed());
+                    QFile file(QDir::currentPath() +"/PlayLists/"+carpeta +"/"+ nombre+".mp3");
+                    file.open(QIODevice::WriteOnly);
+                    file.write(array);
+                    file.close();
+        }
 
 
 
@@ -257,7 +349,7 @@ using namespace std;
 
 
         if(encontrado == "true"){
-            contrasena_encontrada = Usuarios_Tree->buscarContraseña(Usuarios_Tree->root,contrasena , UserName);
+            contrasena_encontrada = Usuarios_Tree->buscarContrasena(Usuarios_Tree->root,contrasena , UserName);
             cout<<"Contrasena encontrada: " << contrasena_encontrada.toStdString() <<endl;
             if(contrasena_encontrada == "true"){
                 sendMessage("true");
