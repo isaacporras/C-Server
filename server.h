@@ -22,7 +22,7 @@ class Server: public QTcpServer
     Q_OBJECT
 public:
     UsersDB_Tree *Usuarios_Tree;
-    Server(QObject * parent = 0 , quint16 port = 1375);
+    Server(QObject * parent = 0 , quint16 port = 1380);
     virtual  ~Server();
     void sendMessage(QString data);
     void readXML_to_Regist(QString XML);

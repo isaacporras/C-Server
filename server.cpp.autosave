@@ -144,7 +144,7 @@ using namespace std;
         QString Name = NameElement.firstChild().toText().data();
 
 
-        qDebug()<<"The Genero is: "<< Name;
+        qDebug()<<"The Nombre is: "<< Name;
 
         //***********************************************************//
 

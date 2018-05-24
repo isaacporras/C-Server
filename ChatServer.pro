@@ -19,9 +19,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
-    server.cpp
+    server.cpp \
+    json_handler.cpp
 
 HEADERS += \
     server.h \
     usersdb_tree.h \
-    usernode.h
+    usernode.h \
+    json_handler.h
+
+RESOURCES += \
+    memory.qrc
