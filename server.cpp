@@ -4,7 +4,7 @@
 
 #include <string>
 #include <QDomDocument>
-
+#include <json_handler.h>
 
 
 using namespace std;
@@ -40,6 +40,7 @@ using namespace std;
       connect(client, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
       qDebug() << "New client from:" << client->peerAddress().toString();
+
     }
 
 
@@ -103,7 +104,7 @@ using namespace std;
 
         QString Playlist =PlayListElement.firstChild().toText().data();
 
-
+        cout <<"Current Path"<< QDir::currentPath().toStdString()<<endl;
         qDebug()<<"The playlist is: "<< Playlist;
         if(QDir("PlayLists").exists()){
             QDir dir(QDir::currentPath() + "/PlayLists");
@@ -137,6 +138,7 @@ using namespace std;
 
 
         qDebug()<<"The Bytes of the song are is: "<< SongBytes;
+
         //***********************************************************//
 
         QDomElement NameElement = n.nextSibling().toElement();
@@ -144,7 +146,7 @@ using namespace std;
         QString Name = NameElement.firstChild().toText().data();
 
 
-        qDebug()<<"The Genero is: "<< Name;
+        qDebug()<<"The Nombre is: "<< Name;
 
         //***********************************************************//
 
@@ -265,7 +267,10 @@ using namespace std;
     {
         qDebug() << "Client disconnected:" << client->peerAddress().toString();
     }
-
+    /**Se encarga de pasear el xml que contiene la informacion de registro de un usuario
+     * @brief Server::readXML_to_Regist
+     * @param XML
+     */
     void Server::readXML_to_Regist(QString XML){
 
         QDomDocument doc;
@@ -328,6 +333,8 @@ using namespace std;
         //Ingresa el usuario en el arbol //
         if(encontrado == "false"){
         Usuarios_Tree->insertarNodo(UserName,Name,Age,Genero,PassWord);
+//        JSON_Handler json_writer;
+//        json_writer.writeOnJSON_User(UserName,Name,Age,PassWord,Genero);
         }
 
         //Imprime el arbol para verificar que se inserto //
@@ -335,13 +342,16 @@ using namespace std;
 
         qDebug()<<"Se terminó de recorrer";
 
+
         Send_Buscado_Answer(XML, encontrado);
 
 
-
-
-
         }
+    /**Recibe un xml, le extrae el nombre de usuario y contrasena. Busca al usuario y retorna true si lo encontro ,false  caso contrario
+     * @brief Server::Send_Buscado_Answer
+     * @param XML
+     * @param encontrado
+     */
 
     void Server::Send_Buscado_Answer(QString XML,QString encontrado){
 
@@ -382,6 +392,7 @@ using namespace std;
         sendMessage(encontrado);
 
     }
+
 
 
 
