@@ -76,8 +76,45 @@ using namespace std;
                 saveSong(line);
 
             }
+            else if (operation.attribute("ID") == "4"){
+                //Se esta intentando cargar una cancion //
+                cout<<"Se quiere ingresar una cancion"<<endl;
+                addNewPlaylist(line);
+
+            }
 
         }
+    }
+    /**Crea una carpeta con las canciones del playlist request //
+     * @brief Server::addNewPlaylist
+     */
+    void Server::addNewPlaylist(QString XML){
+        QDomDocument doc;
+        doc.setContent(XML);
+
+        QDomElement operation = doc.documentElement();
+        QString OperationTag = operation.tagName();
+
+        QDomNode n = operation.firstChild();
+
+        //Lee el nombre del playlist del XML//
+        //***********************************************************//
+        QDomElement PlayListElement = n.toElement();
+
+        QString Playlist =PlayListElement.firstChild().toText().data();
+
+
+        qDebug()<<"The playlist is: "<< Playlist;
+        if(QDir("PlayLists").exists()){
+            QDir dir(QDir::currentPath() + "/PlayLists");
+            dir.mkdir(Playlist);
+        }
+        else{
+            QDir().mkdir("PlayLists");
+        }
+
+
+        cout << QDir::currentPath().toStdString() <<",exist?"<<QDir(Playlist).exists()<<endl;
     }
     void Server::saveSong(QString xml){
 
