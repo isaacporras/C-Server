@@ -30,7 +30,7 @@ public:
     void Search_User_Login(QString XML);
     void saveSong(QString xml);
     void addNewPlaylist(QString XML);
-    void playSong(QString playlist,QString song);
+    void playSong(QString playlist,QString song,QString counter);
     void generateMP3(QString data, QString carpeta,QString nombre);
     void SendSongs_Names();
 

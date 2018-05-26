@@ -122,7 +122,10 @@ using namespace std;
 
                 QDomElement SongElement = n.nextSibling().toElement();
                 QString SongName = SongElement.firstChild().toText().data();
-                playSong(PlaylistName,SongName);
+
+                QDomElement ChunkElement = n.nextSibling().nextSibling().toElement();
+                QString Chunk = ChunkElement.firstChild().toText().data();
+                playSong(PlaylistName,SongName,Chunk);
 
 
             }
@@ -183,17 +186,17 @@ using namespace std;
 
         }
 
-    void Server::playSong(QString playlist,QString song){
+    void Server::playSong(QString playlist,QString song ,QString counter1){
 
         ///
         /// Se necesita analizar el XML (line) y obtener un parámetro especial que indica el chunk cargado en el
         /// cliente. Éste le ayuda al servidor para saber cuantos chunks se debe saltar y cual seleccionar para,
         /// enviarlo al cliente.
         ///
-
+        qDebug()<<"El couter entrante es: "+counter1 ;
         int counter = 0;
-        if (song != "0"){
-            counter = song.toInt();
+        if (counter1 != "0"){
+            counter = counter1.toInt();
         }
 
         string messageRecived = song.toStdString();
