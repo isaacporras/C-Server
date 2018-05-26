@@ -22,7 +22,7 @@ class Server: public QTcpServer
     Q_OBJECT
 public:
     UsersDB_Tree *Usuarios_Tree;
-    Server(QObject * parent = 0 , quint16 port = 1414);
+    Server(QObject * parent = 0 , quint16 port = 1421);
     virtual  ~Server();
     void sendMessage(QString data);
     void readXML_to_Regist(QString XML);
@@ -30,8 +30,9 @@ public:
     void Search_User_Login(QString XML);
     void saveSong(QString xml);
     void addNewPlaylist(QString XML);
-    void playSong(QString XML);
-    void generateMP3(QString data, QString carpeta);
+    void playSong(QString playlist,QString song);
+    void generateMP3(QString data, QString carpeta,QString nombre);
+    void SendSongs_Names();
 
 private slots:
 
@@ -48,6 +49,7 @@ public:
 
     QTcpSocket * client;
     Server *servidor;
+
 
 
 

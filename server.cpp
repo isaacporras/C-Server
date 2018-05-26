@@ -51,7 +51,7 @@ using namespace std;
         while(client->canReadLine())
         {
             QString line = QString::fromUtf8(client->readAll().trimmed());
-            cout << "Client :\n" << line.toUtf8().constData() << endl;
+//            cout << "Client :\n" << line.toUtf8().constData() << endl;
 
             QDomDocument doc;
             doc.setContent(line);
@@ -100,7 +100,7 @@ using namespace std;
 
                 {
                     QTest::qSleep (100);
-                    cout<<"Playlistname: "<<list.at(i).toStdString()<<endl;
+                    cout<<"Playlist name: "<<list.at(i).toStdString()<<endl;
 
                     sendMessage(list.at(i));
                     i = i + 1;
@@ -113,17 +113,77 @@ using namespace std;
             }
 
             else if (operation.attribute("ID") == "13"){
-                //Se esta intentando reproducir una cancion //
+                //Se esta intentando reproducir una cancion via streaming //
                 cout<<"Se quiere reproducir una cancion"<<endl;
-                playSong(line);
+                QDomNode n = operation.firstChild();
+                QDomElement PlaylistElement = n.toElement();
+
+                QString PlaylistName = PlaylistElement.firstChild().toText().data();
+
+                QDomElement SongElement = n.nextSibling().toElement();
+                QString SongName = SongElement.firstChild().toText().data();
+                playSong(PlaylistName,SongName);
 
 
+            }
+            else if (operation.attribute("ID") == "6"){
+                // //
+                cout<<"Se pidieron los datos de las canciones"<<endl;
+                SendSongs_Names();
 
             }
         }
     }
+    void Server::SendSongs_Names(){
+        //Peticion para saber que playlists existen//
+        cout<<"Busqueda a profundidad en los archivos"<<endl;
 
-    void Server::playSong(QString line){
+        QDir dir(QDir::currentPath() + "/PlayLists");
+
+            qDebug() << "Scanning: " << dir.path();
+
+            QStringList fileList = dir.entryList();
+            for (int i=0; i < fileList.count(); i++)
+            {
+                if( fileList[i] != "." && fileList[i] != ".."){
+                    QTest::qSleep (50);
+                    qDebug()<<"---------Playlist Start-------";
+                    sendMessage("PlayList Start");
+                    QTest::qSleep (50);
+                    qDebug() << "PlaylistFound: " << fileList[i];
+                    sendMessage(fileList[i]);
+                    QTest::qSleep (50);
+                    QString newPath = QString("%1/%2").arg(dir.absolutePath()).arg(fileList.at(i));
+                    QDir dirSongs(newPath);
+                    QStringList SongsList = dirSongs.entryList();
+                    for(int j =0; j < SongsList.count(); j ++){
+
+                        if(SongsList[j] != "." && SongsList[j]!= ".."){
+                            qDebug()<<"---------Song Start-------";
+                            QTest::qSleep (50);
+                            sendMessage(SongsList[j]);
+                            QTest::qSleep (50);
+                            qDebug()<<"Las canciones son:" <<SongsList[j];
+                            qDebug()<<"---------Song Start-------";
+                        }
+
+                    }
+
+                    QTest::qSleep (50);
+                    qDebug()<<"---------Playlist End-------";
+                    sendMessage("PlayList End");
+                    QTest::qSleep (50);
+
+
+                }
+            }
+            qDebug()<<"---------FINISHED-------";
+            sendMessage("finished");
+
+
+        }
+
+    void Server::playSong(QString playlist,QString song){
 
         ///
         /// Se necesita analizar el XML (line) y obtener un parámetro especial que indica el chunk cargado en el
@@ -132,21 +192,22 @@ using namespace std;
         ///
 
         int counter = 0;
-        if (line != "0"){
-            counter = line.toInt();
+        if (song != "0"){
+            counter = song.toInt();
         }
 
-        string messageRecived = line.toStdString();
+        string messageRecived = song.toStdString();
 
         //cout << "Client :\n" << messageRecived << endl;
 
-        QString str1 = QString("FUNCIONA....");
+//        QString str1 = QString("FUNCIONA....");
 
         ///
         /// El path para la canción (fileName) debe referenciar a la carpeta preasignada para guardar los MP3.
         ///
 
-        QString fileName = "/home/estebandcg1999/Downloads/Progra#2 - Interfaz/MP3/Bella.mp3";
+        QString fileName = QDir::currentPath() + "/PlayLists/"+ playlist +"/"+song;
+        qDebug() <<"Se pidio reproducir la cancion en el path: "+fileName;
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)){
 
@@ -192,23 +253,25 @@ using namespace std;
         //***********************************************************//
         QDomElement PlayListElement = n.toElement();
 
-        QString Playlist =PlayListElement.firstChild().toText().data();
+        QString Playlist = PlayListElement.firstChild().toText().data();
 
         cout <<"Current Path"<< QDir::currentPath().toStdString()<<endl;
         qDebug()<<"The playlist is: "<< Playlist;
         if(QDir("PlayLists").exists()){
             QDir dir(QDir::currentPath() + "/PlayLists");
             dir.mkdir(Playlist);
+            QFile file(QDir::currentPath() + "/PlayLists/"+Playlist +"/"+ Playlist+ ".txt");
         }
         else{
             QDir().mkdir("PlayLists");
-        }
+            QDir direc(QDir::currentPath() + "/PlayLists/");
+            direc.mkdir(Playlist);
 
+        }
 
         cout << QDir::currentPath().toStdString() <<",exist?"<<QDir(Playlist).exists()<<endl;
     }
     void Server::saveSong(QString xml){
-
 
         QDomDocument doc;
         doc.setContent(xml);
@@ -292,14 +355,15 @@ using namespace std;
 
         qDebug()<<"The Playlist is: "<< Playlist;
 
-        generateMP3(SongBytes,Playlist);
+        generateMP3(SongBytes,Playlist,Name);
 
     }
-    void Server::generateMP3(QString data, QString carpeta){
+    void Server::generateMP3(QString data, QString carpeta,QString nombre){
 
             QString information = data;
                     QByteArray array = QByteArray::fromBase64(information.toLocal8Bit().trimmed());
-                    QFile file("/Users/IsaacPorras/Parser-Interface/build-ChatServer-Desktop_Qt_5_10_1_clang_64bit-Profile/PlayLists/Isaac/Test.mp3");
+                    cout<<"El path donde se guarda es:" <<(QDir::currentPath() +"/PlayLists/"+ carpeta +"/"+ nombre+".mp3").toStdString()<<endl;
+                    QFile file(QDir::currentPath() +"/PlayLists/"+ carpeta +"/"+ nombre+".mp3");
                     file.open(QIODevice::WriteOnly);
                     file.write(array);
                     file.close();
@@ -369,6 +433,7 @@ using namespace std;
     {
         qDebug() << "Client disconnected:" << client->peerAddress().toString();
     }
+
     /**Se encarga de pasear el xml que contiene la informacion de registro de un usuario
      * @brief Server::readXML_to_Regist
      * @param XML
