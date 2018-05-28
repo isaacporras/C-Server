@@ -21,13 +21,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     server.cpp \
-    json_handler.cpp
+    json_handler.cpp \
+    btree.cpp
 
 HEADERS += \
     server.h \
     usersdb_tree.h \
     usernode.h \
-    json_handler.h
+    json_handler.h \
+    btree.h \
+    btreenode.h
 
 RESOURCES += \
     memory.qrc

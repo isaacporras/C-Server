@@ -2,11 +2,12 @@
 
 #include <iostream>
 
-#include <string>
+
 #include <QDomDocument>
 #include <json_handler.h>
-#include <QTest>
 
+#include <QTest>
+#include <string>
 using namespace std;
 
     Server::Server(QObject* parent , quint16 port): QTcpServer(parent)
@@ -79,7 +80,7 @@ using namespace std;
 
             }
             else if (operation.attribute("ID") == "4"){
-                //Se esta intentando cargar una cancion //
+                //Se esta intentando cargar una Playlist //
                 cout<<"Se quiere ingresar una cancion"<<endl;
                 addNewPlaylist(line);
 
@@ -136,6 +137,17 @@ using namespace std;
                 SendSongs_Names();
 
             }
+            else if (operation.attribute("ID") == "9"){
+                // //
+                cout<<"Se pidio la metadata de una cancion"<<endl;
+                QDomNode n = operation.firstChild();
+                QDomElement SongNameElement = n.toElement();
+
+                QString SongName = SongNameElement.firstChild().toText().data();
+                sendMetadata(SongName);
+
+
+            }
             else if (operation.attribute("ID") == "7"){
                 //Se pidio cargar el arbol con usuarios"//
                 cout<<"Se pidio cargar el arbol con los usuarios"<<endl;
@@ -144,7 +156,63 @@ using namespace std;
                 cout<< "El recorrido en el arbol es desde Server.cpp es:" <<endl;
                 Usuarios_Tree->recorridoPreOrder(Usuarios_Tree->root);
             }
+            else if(operation.attribute("ID") == "8"){
+                cout<<"Se pidio cargar la metadata en arboles con las canciones"<<endl;
+                JSON_Handler SongsCharger;
+                SongsCharger.ChargeSongsNameOnTree(SongsNameTree);
+
+            }
         }
+    }
+    void Server::sendMetadata(QString songname){
+        //Peticion para saber que playlists existen//
+        cout<<"Busqueda a profundidad en los archivos"<<endl;
+
+
+
+        QString file_contend;
+        QFile file;
+        file.setFileName(QDir::currentPath() + "/Metadata/" + songname.remove(songname.length()-4, songname.length())+ ".json");
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        file_contend = file.readAll();
+        file.close();
+        cout<< file_contend.toStdString()<<endl;
+         QJsonDocument JsonDocument = QJsonDocument::fromJson(file_contend.toUtf8());
+         QJsonObject sett2 = JsonDocument.object();
+
+
+         QJsonValue NameValue = sett2.value(QString("Nombre"));
+         cout<< NameValue.toString().toStdString()<<endl;
+         sendMessage(NameValue.toString());
+         QTest::qSleep (50);
+
+         QJsonValue Generovalue = sett2.value(QString("Genero"));
+         cout<< "Genero:"<<Generovalue.toString().toStdString()<<endl;
+         sendMessage(Generovalue.toString());
+         QTest::qSleep (50);
+
+         QJsonValue Artistavalue = sett2.value(QString("Artista"));
+         cout<<"Artista:"<< Artistavalue.toString().toStdString()<<endl;
+         sendMessage(Artistavalue.toString());
+         QTest::qSleep (50);
+
+         QJsonValue Albumvalue = sett2.value(QString("Album"));
+         cout<<"Album:"<< Albumvalue.toString().toStdString()<<endl;
+         sendMessage(Albumvalue.toString());
+         QTest::qSleep (50);
+
+         QJsonValue YearValue = sett2.value(QString("Year"));
+         cout<< "Year:"<<YearValue.toString().toStdString()<<endl;
+         sendMessage(YearValue.toString());
+         QTest::qSleep (100);
+
+         QJsonValue LetraValue = sett2.value(QString("Letra"));
+         cout<< "Letra:"<<LetraValue.toString().toStdString()<<endl;
+         sendMessage(LetraValue.toString());
+         QTest::qSleep (150);
+
+       qDebug()<<"---------FINISHED-------";
+       sendMessage("finished");
     }
 
     void Server::SendSongs_Names(){
@@ -304,7 +372,7 @@ using namespace std;
         QString SongBytes = SongBytesElement.firstChild().toText().data();
 
 
-        qDebug()<<"The Bytes of the song are is: "<< SongBytes;
+//        qDebug()<<"The Bytes of the song are is: "<< SongBytes;
 
         //***********************************************************//
 
@@ -314,6 +382,8 @@ using namespace std;
 
 
         qDebug()<<"The Nombre is: "<< Name;
+
+//        SongsNameTree->insert(Name);
 
         //***********************************************************//
 
@@ -351,9 +421,17 @@ using namespace std;
 
         qDebug()<<"The Year is: "<< Year;
 
+
+        QDomElement PlaylistElement = n.nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Playlist = PlaylistElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Playlist is: "<< Playlist;
+
         //***********************************************************//
 
-        QDomElement LetraElement = n.nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+        QDomElement LetraElement = n.nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().toElement();
 
         QString Letra = LetraElement.firstChild().toText().data();
 
@@ -362,14 +440,12 @@ using namespace std;
 
         //***********************************************************//
 
-        QDomElement PlaylistElement = n.nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().toElement();
-
-        QString Playlist = PlaylistElement.firstChild().toText().data();
-
-
-        qDebug()<<"The Playlist is: "<< Playlist;
 
         generateMP3(SongBytes,Playlist,Name);
+
+        JSON_Handler SongHandler;
+        SongHandler.writeOnJSON_Songs(Name,Genero,Artista,Album,Year,Letra,Playlist);
+
 
     }
 

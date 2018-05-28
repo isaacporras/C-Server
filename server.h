@@ -10,6 +10,7 @@
 #include "usersdb_tree.h"
 #include <QDomDocument>
 using namespace std;
+#include <btree.h>
 
 
 ///
@@ -22,6 +23,7 @@ class Server: public QTcpServer
 
     Q_OBJECT
 public:
+    BTree *SongsNameTree;
     UsersDB_Tree *Usuarios_Tree;
     Server(QObject * parent = 0 , quint16 port = 1421);
     virtual  ~Server();
@@ -34,6 +36,7 @@ public:
     void playSong(QString playlist,QString song,QString counter);
     void generateMP3(QString data, QString carpeta,QString nombre);
     void SendSongs_Names();
+    void sendMetadata(QString songname);
 
 private slots:
 
