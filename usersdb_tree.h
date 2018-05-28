@@ -102,7 +102,7 @@ class UsersDB_Tree {
 
         void recorridoPreOrder(UserNode *nodo){
             if(nodo != 0){
-                std::cout << "El recorrido del arbol es: " << nodo->username.toStdString() << std::endl;
+                std::cout << "El recorrido del arbol es: " << nodo->username.toStdString()<< std::endl;
                 recorridoPreOrder(nodo->left);
                 recorridoPreOrder(nodo->right);
             }

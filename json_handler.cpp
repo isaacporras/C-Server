@@ -7,61 +7,100 @@
 #include <iostream>
 using namespace std;
 #include <QTextStream>
+#include <QDomDocument>
+
 
 JSON_Handler::JSON_Handler()
 {
 
 }
-//void JSON_Handler:: writeOnJSON_User(QString username, QString name,QString Age,QString password, QString Genero_Favorito){
-//    QFile file_before("/Users/IsaacPorras/Desktop/C-Server/Users.json");
-//    file_before.open(QIODevice::ReadOnly);
-//    QString jsonInicial;
-//    QJsonValue JsonInicial(jsonInicial);
+void JSON_Handler::ChargeUsersOnTree(UsersDB_Tree *tree){
+    if(!QDir("Users").exists()){
+        QDir direc(QDir::currentPath());
+        direc.mkdir("Users");
+        return;
+    }
+    else{
+        QDir dir(QDir::currentPath() + "/Users");
 
-//   QJsonObject jsonInicial_object = JsonInicial.toObject();
-//   //...................................................///
+            qDebug() << "Scanning: " << dir.path();
 
-//   QJsonArray jsonArray;
-//   jsonArray.append(jsonInicial);
+            QStringList fileList = dir.entryList();
+            for (int i=0; i < fileList.count(); i++)
+            {
+                if( fileList[i] != "." && fileList[i] != ".."){
 
-//    QJsonObject newUser;
-//    newUser.insert("Username", QJsonValue::fromVariant(username));
-//    newUser.insert("Name", QJsonValue::fromVariant(name));
-//    newUser.insert("Age", QJsonValue::fromVariant(Age));
-//    newUser.insert("password", QJsonValue::fromVariant(password));
-//    newUser.insert("GeneroFavorito", QJsonValue::fromVariant(Genero_Favorito));
+                    qDebug() << "User Found: " << fileList[i];
 
+                    QString file_contend;
+                    QFile file;
+                    file.setFileName(QDir::currentPath() + "/Users/" + fileList[i]);
+                    file.open(QIODevice::ReadOnly | QIODevice::Text);
+                    file_contend = file.readAll();
+                    file.close();
+                    cout<< file_contend.toStdString()<<endl;
+                     QJsonDocument JsonDocument = QJsonDocument::fromJson(file_contend.toUtf8());
+                     QJsonObject sett2 = JsonDocument.object();
+                     QJsonValue NameValue = sett2.value(QString("Name"));
+                     cout<< NameValue.toString().toStdString()<<endl;
 
-//    QJsonDocument doc2(newUser);
-//    QString newUserString(doc2.toJson(QJsonDocument::Compact));
-//    newUserString.remove(0,1);
+                     QJsonValue Usernamevalue = sett2.value(QString("Username"));
+                     cout<< Usernamevalue.toString().toStdString()<<endl;
 
-//     QString FinalJSON = jsonInicial + newUserString;
-//     if(jsonInicial_object.isEmpty() || jsonInicial == ""){
-//         FinalJSON = "{"+ jsonInicial + newUserString+"}";
-//     }
-
-//     cout<<FinalJSON.toStdString()<<endl;
-
-//    //termina de escribir //
-//     QJsonValue finalJsonValue(FinalJSON);
-
-//    jsonArray.append(newUser)
-
-//    QFile file_during;
-//    file_during.setFileName("/Users/IsaacPorras/Desktop/C-Server/Users.json");
-//    file_during.open(QIODevice::WriteOnly);
-//    QJsonDocument documento = QJsonDocument(jsonArray);
-//    /* Check it opened OK */
-//    if(!file_during.isOpen()){
-//        std::cout<< "El archivo ya estaba abierto"<<endl;
-//    }
-
-//    /* Point a QTextStream object at the file */
-//    QTextStream outStream(&file_during);
-//    /* Write the line to the file */
-//    outStream << documento.toJson();
+                     QJsonValue Edadvalue = sett2.value(QString("Age"));
+                     cout<< Edadvalue.toString().toStdString()<<endl;
 
 
 
-//}
+                     QJsonValue PassWordvalue = sett2.value(QString("Password"));
+                     cout<< PassWordvalue.toString().toStdString()<<endl;
+
+                     QJsonValue GeneroFavValue = sett2.value(QString("GeneroFavorito"));
+                     cout<< GeneroFavValue.toString().toStdString()<<endl;
+
+                     tree->insertarNodo(Usernamevalue.toString(),NameValue.toString(),Edadvalue.toString(),GeneroFavValue.toString(),
+                                       PassWordvalue.toString());
+
+
+                }
+                tree->recorridoPreOrder(tree->root);
+            }
+            qDebug()<<"---------FINISHED-------";
+
+    }
+
+}
+void JSON_Handler:: writeOnJSON_User(QString username, QString name,QString Age,QString password, QString Genero_Favorito){
+    if(!QDir("Users").exists()){
+        cout <<"ERROR" <<endl;
+    }
+    else{
+        QDir direc(QDir::currentPath());
+        direc.mkdir("Users");
+    }
+    QFile file(QDir::currentPath() + "/Users/" + username + ".json");
+    file.open(QIODevice::WriteOnly);
+    QString jsonInicial;
+    QJsonValue JsonInicial(jsonInicial);
+
+   QJsonObject jsonInicial_object = JsonInicial.toObject();
+   //...................................................///
+
+   QJsonArray jsonArray;
+   jsonArray.append(jsonInicial);
+
+    QJsonObject newUser;
+    newUser.insert("Username", QJsonValue::fromVariant(username));
+    newUser.insert("Name", QJsonValue::fromVariant(name));
+    newUser.insert("Age", QJsonValue::fromVariant(Age));
+    newUser.insert("Password", QJsonValue::fromVariant(password));
+    newUser.insert("GeneroFavorito", QJsonValue::fromVariant(Genero_Favorito));
+
+
+    QJsonDocument documento = QJsonDocument(newUser);
+
+    QTextStream outStream(&file);
+    /* Write the line to the file */
+    outStream << documento.toJson();
+
+}

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include "usersdb_tree.h"
+#include <QDomDocument>
 using namespace std;
 
 

@@ -114,7 +114,7 @@ using namespace std;
 
             else if (operation.attribute("ID") == "13"){
                 //Se esta intentando reproducir una cancion via streaming //
-                cout<<"Se quiere reproducir una cancion"<<endl;
+//                cout<<"Se quiere reproducir una cancion"<<endl;
                 QDomNode n = operation.firstChild();
                 QDomElement PlaylistElement = n.toElement();
 
@@ -125,6 +125,7 @@ using namespace std;
 
                 QDomElement ChunkElement = n.nextSibling().nextSibling().toElement();
                 QString Chunk = ChunkElement.firstChild().toText().data();
+
                 playSong(PlaylistName,SongName,Chunk);
 
 
@@ -135,8 +136,17 @@ using namespace std;
                 SendSongs_Names();
 
             }
+            else if (operation.attribute("ID") == "7"){
+                //Se pidio cargar el arbol con usuarios"//
+                cout<<"Se pidio cargar el arbol con los usuarios"<<endl;
+                JSON_Handler UsersCharger;
+                UsersCharger.ChargeUsersOnTree(Usuarios_Tree);
+                cout<< "El recorrido en el arbol es desde Server.cpp es:" <<endl;
+                Usuarios_Tree->recorridoPreOrder(Usuarios_Tree->root);
+            }
         }
     }
+
     void Server::SendSongs_Names(){
         //Peticion para saber que playlists existen//
         cout<<"Busqueda a profundidad en los archivos"<<endl;
@@ -193,7 +203,7 @@ using namespace std;
         /// cliente. Éste le ayuda al servidor para saber cuantos chunks se debe saltar y cual seleccionar para,
         /// enviarlo al cliente.
         ///
-        qDebug()<<"El couter entrante es: "+counter1 ;
+
         int counter = 0;
         if (counter1 != "0"){
             counter = counter1.toInt();
@@ -210,7 +220,7 @@ using namespace std;
         ///
 
         QString fileName = QDir::currentPath() + "/PlayLists/"+ playlist +"/"+song;
-        qDebug() <<"Se pidio reproducir la cancion en el path: "+fileName;
+
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)){
 
@@ -263,7 +273,7 @@ using namespace std;
         if(QDir("PlayLists").exists()){
             QDir dir(QDir::currentPath() + "/PlayLists");
             dir.mkdir(Playlist);
-            QFile file(QDir::currentPath() + "/PlayLists/"+Playlist +"/"+ Playlist+ ".txt");
+
         }
         else{
             QDir().mkdir("PlayLists");
@@ -274,6 +284,7 @@ using namespace std;
 
         cout << QDir::currentPath().toStdString() <<",exist?"<<QDir(Playlist).exists()<<endl;
     }
+
     void Server::saveSong(QString xml){
 
         QDomDocument doc;
@@ -361,6 +372,8 @@ using namespace std;
         generateMP3(SongBytes,Playlist,Name);
 
     }
+
+
     void Server::generateMP3(QString data, QString carpeta,QString nombre){
 
             QString information = data;
@@ -381,6 +394,7 @@ using namespace std;
         client->write(QString(data+"\n").toUtf8());
         client->waitForBytesWritten(10000);
     }
+
     void Server::Search_User_Login(QString XML){
 
         QDomDocument doc;
@@ -408,6 +422,8 @@ using namespace std;
 
 
         qDebug()<<"La contrasena digitada: "<< contrasena;
+
+        Usuarios_Tree->recorridoPreOrder(Usuarios_Tree->root);
 
         QString encontrado = Usuarios_Tree->buscarUsuario(Usuarios_Tree->root,UserName);
 
@@ -503,8 +519,8 @@ using namespace std;
         //Ingresa el usuario en el arbol //
         if(encontrado == "false"){
         Usuarios_Tree->insertarNodo(UserName,Name,Age,Genero,PassWord);
-//        JSON_Handler json_writer;
-//        json_writer.writeOnJSON_User(UserName,Name,Age,PassWord,Genero);
+        JSON_Handler json_writer;
+        json_writer.writeOnJSON_User(UserName,Name,Age,PassWord,Genero);
         }
 
         //Imprime el arbol para verificar que se inserto //
