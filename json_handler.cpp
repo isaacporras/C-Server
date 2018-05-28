@@ -20,6 +20,9 @@ void JSON_Handler::ChargeUsersOnTree(UsersDB_Tree *tree){
         direc.mkdir("Users");
         return;
     }
+    else if (tree->root != nullptr){
+        return;
+    }
     else{
         QDir dir(QDir::currentPath() + "/Users");
 
