@@ -317,7 +317,7 @@ using namespace std;
 
         QByteArray array = file.readAll();
 
-        QString information = array.mid(195500*counter,200000).toBase64().constData();
+        QString information = array.mid(35190*counter,36000).toBase64().constData();
         file.close();
 
         ///
