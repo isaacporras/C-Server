@@ -1,6 +1,6 @@
 #include "btree.h"
 
-#include "BTree.h"
+#include "btree.h"
 
 using namespace std;
 

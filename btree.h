@@ -6,7 +6,7 @@
 using namespace std;
 #include <QString>
 
-#include "BTreeNode.h"
+#include "btreenode.h"
 
 #include <iostream>
 
