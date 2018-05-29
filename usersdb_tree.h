@@ -98,6 +98,20 @@ class UsersDB_Tree {
 
             }
         }
+public:
+        QString buscarNombre(UserNode *nodo, QString username){
+            while(nodo != 0){
+                if(nodo->username == username){
+                    return nodo->name;
+                }
+                else if (nodo->username.length() >= username.length()){
+                    recorridoPreOrder(nodo->left);
+                }
+                else if(nodo->username.length() < username.length()){
+                    recorridoPreOrder(nodo->right);
+                }
+            }
+        }
     public:
 
         void recorridoPreOrder(UserNode *nodo){

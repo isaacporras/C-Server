@@ -17,6 +17,7 @@ public:
     static void ChargeUsersOnTree(UsersDB_Tree *tree);
     static void ChargeSongsNameOnTree(BTree *tree);
     void writeOnJSON_Songs(QString Nombre, QString Genero,QString Artista,QString Album, QString Year, QString Lyrics, QString Playlist);
+    QString getUsersName(QString username);
 };
 
 #endif // JSON_HANDLER_H

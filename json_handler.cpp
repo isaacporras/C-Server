@@ -124,6 +124,51 @@ void JSON_Handler::ChargeUsersOnTree(UsersDB_Tree *tree){
     }
 
 }
+QString JSON_Handler::getUsersName(QString username){
+    if(!QDir("Users").exists()){
+        QDir direc(QDir::currentPath());
+        direc.mkdir("Users");
+
+    }
+    else{
+        QDir dir(QDir::currentPath() + "/Users");
+
+            qDebug() << "Scanning: " << dir.path();
+
+            QStringList fileList = dir.entryList();
+            for (int i=0; i < fileList.count(); i++)
+            {
+                if( fileList[i] != "." && fileList[i] != ".."){
+
+                    qDebug() << "User Found: " << fileList[i];
+
+                    QString file_contend;
+                    QFile file;
+                    file.setFileName(QDir::currentPath() + "/Users/" + fileList[i]);
+                    file.open(QIODevice::ReadOnly | QIODevice::Text);
+                    file_contend = file.readAll();
+                    file.close();
+                    cout<< file_contend.toStdString()<<endl;
+                     QJsonDocument JsonDocument = QJsonDocument::fromJson(file_contend.toUtf8());
+                     QJsonObject sett2 = JsonDocument.object();
+                     QJsonValue NameValue = sett2.value(QString("Name"));
+                     cout<< NameValue.toString().toStdString()<<endl;
+
+                     QJsonValue Usernamevalue = sett2.value(QString("Username"));
+                     cout<< Usernamevalue.toString().toStdString()<<endl;
+
+                     if(username == Usernamevalue.toString()){
+                         return NameValue.toString();
+                     }
+
+
+                }
+
+            }
+            qDebug()<<"---------FINISHED-------";
+
+    }
+}
 void JSON_Handler::writeOnJSON_Songs(QString Nombre, QString Genero,QString Artista,QString Album, QString Year,QString Lyrics,QString playlist){
     if(!QDir("Metadata").exists()){
         cout <<"ERROR" <<endl;

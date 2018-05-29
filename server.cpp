@@ -113,6 +113,7 @@ using namespace std;
                 }
             }
 
+
             else if (operation.attribute("ID") == "13"){
                 //Se esta intentando reproducir una cancion via streaming //
 //                cout<<"Se quiere reproducir una cancion"<<endl;
@@ -160,6 +161,20 @@ using namespace std;
                 cout<<"Se pidio cargar la metadata en arboles con las canciones"<<endl;
                 JSON_Handler SongsCharger;
                 SongsCharger.ChargeSongsNameOnTree(SongsNameTree);
+
+            }
+            else if (operation.attribute("ID") == "10"){
+                QDomNode n = operation.firstChild();
+                //Se pidio el nombre de un usuario //
+                QDomElement UserNameElement = n.toElement();
+
+                QString UserName = UserNameElement.firstChild().toText().data();
+
+                JSON_Handler handler;
+
+
+                sendMessage(handler.getUsersName(UserName));
+
 
             }
         }
