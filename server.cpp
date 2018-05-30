@@ -240,9 +240,26 @@ using namespace std;
                         QTest::qSleep (50);
                         sendMessage("finished");
                         qDebug()<<"---------FINISHED-------";
-
                 }
             }
+            else if(operation.attribute("ID") == "12"){
+                cout<<"Se pidio eliminar una cancion"<<endl;
+
+                QDomNode n = operation.firstChild();
+                QDomElement SongElement = n.toElement();
+
+                QString SongName = SongElement.firstChild().toText().data();
+
+                QDomElement PlaylistElement = n.nextSibling().toElement();
+                QString PlaylistName = PlaylistElement.firstChild().toText().data();
+                QFile Metafile (QDir::currentPath() + "/Metadata/" + SongName.remove(SongName.length()-4, SongName.length()) + ".json");
+                Metafile.remove();
+                QFile MP3file (QDir::currentPath() + "/PlayLists/" + PlaylistName +"/" + SongName + ".mp3");
+                qDebug()<<"El path del mp3 a eliminar es:"+QDir::currentPath() + "/PlayLists/" + PlaylistName +"/" + SongName;
+                MP3file.remove();
+            }
+
+
 
         }
     }
