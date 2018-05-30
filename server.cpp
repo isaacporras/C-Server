@@ -343,7 +343,7 @@ using namespace std;
          QJsonValue StarsValue = sett2_2.value(QString("Stars"));
          cout<< "Stars:"<<StarsValue.toString().toStdString()<<endl;
          sendMessage(StarsValue.toString());
-         QTest::qSleep (150);
+         QThread::msleep (150);
 
        qDebug()<<"---------FINISHED-------";
        sendMessage("finished");
