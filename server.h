@@ -37,6 +37,7 @@ public:
     void generateMP3(QString data, QString carpeta,QString nombre);
     void SendSongs_Names();
     void sendMetadata(QString songname);
+    void modifyData(QString xml);
 
 private slots:
 

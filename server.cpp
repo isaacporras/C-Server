@@ -258,6 +258,9 @@ using namespace std;
                 qDebug()<<"El path del mp3 a eliminar es:"+QDir::currentPath() + "/PlayLists/" + PlaylistName +"/" + SongName;
                 MP3file.remove();
             }
+            else if(operation.attribute("ID") == "20"){
+                modifyData(line);
+            }
 
 
 
@@ -541,6 +544,100 @@ using namespace std;
 
 
         generateMP3(SongBytes,Playlist,Name);
+
+        JSON_Handler SongHandler;
+        SongHandler.writeOnJSON_Songs(Name,Genero,Artista,Album,Year,Letra,Playlist);
+
+
+    }
+    void Server::modifyData(QString xml){
+        QDomDocument doc;
+        doc.setContent(xml);
+
+        QDomElement operation = doc.documentElement();
+        QString OperationTag = operation.tagName();
+        qDebug()<<"The root tag is"<< OperationTag;
+        qDebug()<<"The operation code is:"<< operation.attribute("ID");
+
+        QDomNode n = operation.firstChild();
+
+        //Lee los bytes del XML//
+        //***********************************************************//
+        QDomElement SongBytesElement = n.toElement();
+
+        QString SongBytes = SongBytesElement.firstChild().toText().data();
+
+
+//        qDebug()<<"The Bytes of the song are is: "<< SongBytes;
+
+        //***********************************************************//
+
+        QDomElement NameElement = n.nextSibling().toElement();
+
+        QString Name = NameElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Nombre is: "<< Name;
+
+//        SongsNameTree->insert(Name);
+
+        QFile Metafile (QDir::currentPath() + "/Metadata/" + Name.remove(Name.length()-4, Name.length()) + ".json");
+        Metafile.remove();
+
+        //***********************************************************//
+
+        QDomElement GeneroElement = n.nextSibling().nextSibling().toElement();
+
+        QString Genero = GeneroElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Genero is: "<< Genero;
+
+        //***********************************************************//
+
+        QDomElement ArtistaElement = n.nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Artista = ArtistaElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Artista is: "<< Artista;
+
+        //***********************************************************//
+
+        QDomElement AlbumElement = n.nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Album = AlbumElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Album is: "<< Album;
+
+        //***********************************************************//
+
+        QDomElement YearElement = n.nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Year = YearElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Year is: "<< Year;
+
+
+        QDomElement PlaylistElement = n.nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Playlist = PlaylistElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Playlist is: "<< Playlist;
+
+        //***********************************************************//
+
+        QDomElement LetraElement = n.nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().nextSibling().toElement();
+
+        QString Letra = LetraElement.firstChild().toText().data();
+
+
+        qDebug()<<"The Letra is: "<< Letra;
+
+        //***********************************************************//
 
         JSON_Handler SongHandler;
         SongHandler.writeOnJSON_Songs(Name,Genero,Artista,Album,Year,Letra,Playlist);
