@@ -275,6 +275,38 @@ using namespace std;
                 JSON_Handler handler;
                 handler.writeJSON_Stars(SongName.remove(SongName.length()-4, SongName.length()),StarsName);
             }
+            else if(operation.attribute("ID") == "22"){
+                //Peticion para saber que playlists existen//
+                cout<<"Busqueda a profundidad en los archivos"<<endl;
+
+                QDir dir(QDir::currentPath() + "/Users");
+
+                    qDebug() << "Scanning: " << dir.path();
+
+                    QStringList fileList = dir.entryList();
+                    for (int i=0; i < fileList.count(); i++)
+                    {
+                        if( fileList[i] != "." && fileList[i] != ".."){
+                            QThread::msleep (50);
+                            qDebug()<<"---------Users Start-------";
+
+                            QThread::msleep (50);
+
+                            qDebug() << "UserFound: " << fileList[i];
+                            sendMessage(fileList[i]);
+
+                            QThread::msleep (50);
+                            qDebug()<<"---------User End-------";
+
+                            QThread::msleep (50);
+
+
+                        }
+                    }
+                    qDebug()<<"---------FINISHED-------";
+                    sendMessage("finished");
+
+            }
 
 
 
