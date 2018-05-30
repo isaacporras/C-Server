@@ -194,6 +194,39 @@ void JSON_Handler::writeOnJSON_Songs(QString Nombre, QString Genero,QString Arti
     QTextStream outStream(&file);
     /* Write the line to the file */
     outStream << documento.toJson();
+
+
+    JSON_Handler handler;
+    handler.writeJSON_Stars(QJsonValue::fromVariant(Nombre).toString(),"Sin calificar");
+
+
+}
+void JSON_Handler::writeJSON_Stars(QString songname, QString stars){
+    if(!QDir("Stars").exists()){
+        QDir direc(QDir::currentPath());
+        direc.mkdir("Stars");
+    }
+
+    QFile file(QDir::currentPath() + "/Stars/" + songname + ".json");
+    file.open(QIODevice::WriteOnly);
+    QString jsonInicial;
+    QJsonValue JsonInicial(jsonInicial);
+
+   QJsonObject jsonInicial_object = JsonInicial.toObject();
+   //...................................................///
+
+   QJsonArray jsonArray;
+   jsonArray.append(jsonInicial);
+
+    QJsonObject newStars;
+    newStars.insert("Stars", QJsonValue::fromVariant(stars));
+
+    QJsonDocument documento = QJsonDocument(newStars);
+
+    QTextStream outStream(&file);
+    /* Write the line to the file */
+    outStream << documento.toJson();
+
 }
 void JSON_Handler:: writeOnJSON_User(QString username, QString name,QString Age,QString password, QString Genero_Favorito){
     if(!QDir("Users").exists()){
@@ -226,6 +259,5 @@ void JSON_Handler:: writeOnJSON_User(QString username, QString name,QString Age,
 
     QTextStream outStream(&file);
     /* Write the line to the file */
-    outStream << documento.toJson();
 
 }

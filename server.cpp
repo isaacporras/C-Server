@@ -260,7 +260,20 @@ using namespace std;
                 MP3file.remove();
             }
             else if(operation.attribute("ID") == "20"){
+                cout<<"Se pidio modificar la metadata de una cancion"<<endl;
                 modifyData(line);
+            }
+            else if (operation.attribute("ID") == "21"){
+                QDomNode n = operation.firstChild();
+                QDomElement SongElement = n.toElement();
+
+                QString SongName = SongElement.firstChild().toText().data();
+
+                QDomElement StarsElement = n.nextSibling().toElement();
+                QString StarsName = StarsElement.firstChild().toText().data();
+
+                JSON_Handler handler;
+                handler.writeJSON_Stars(SongName.remove(SongName.length()-4, SongName.length()),StarsName);
             }
 
 
@@ -313,6 +326,24 @@ using namespace std;
          cout<< "Letra:"<<LetraValue.toString().toStdString()<<endl;
          sendMessage(LetraValue.toString());
          QThread::msleep (150);
+
+         //Gets the json stars //
+
+         QString file_contend_2;
+         QFile file_2;
+         file_2.setFileName(QDir::currentPath() + "/Stars/" + NameValue.toString() + ".json");
+
+         file_2.open(QIODevice::ReadOnly | QIODevice::Text);
+         file_contend_2 = file_2.readAll();
+         file_2.close();
+         cout<< file_contend_2.toStdString()<<endl;
+          QJsonDocument JsonDocument_2 = QJsonDocument::fromJson(file_contend_2.toUtf8());
+          QJsonObject sett2_2 = JsonDocument_2.object();
+
+         QJsonValue StarsValue = sett2_2.value(QString("Stars"));
+         cout<< "Stars:"<<StarsValue.toString().toStdString()<<endl;
+         sendMessage(StarsValue.toString());
+         QTest::qSleep (150);
 
        qDebug()<<"---------FINISHED-------";
        sendMessage("finished");

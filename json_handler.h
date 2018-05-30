@@ -19,6 +19,7 @@ public:
     static void ChargeSongsNameOnTree(BTree *tree);
     void writeOnJSON_Songs(QString Nombre, QString Genero,QString Artista,QString Album, QString Year, QString Lyrics, QString Playlist);
     QString getUsersName(QString username);
+    void writeJSON_Stars(QString songname, QString stars);
 
 };
 
