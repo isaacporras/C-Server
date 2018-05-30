@@ -48,20 +48,10 @@ void JSON_Handler::ChargeSongsNameOnTree(BTree *tree){
                      QJsonValue NameValue = sett2.value(QString("Nombre"));
                      cout<< NameValue.toString().toStdString()<<endl;
 
-
-//                     tree->insert(NameValue.toString());
-
                 }
 
             }
             qDebug()<<"---------FINISHED-------";
-
-
-
-
-
-
-
 
     }
 }
@@ -124,6 +114,7 @@ void JSON_Handler::ChargeUsersOnTree(UsersDB_Tree *tree){
     }
 
 }
+
 QString JSON_Handler::getUsersName(QString username){
     if(!QDir("Users").exists()){
         QDir direc(QDir::currentPath());

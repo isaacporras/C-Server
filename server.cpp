@@ -158,6 +158,7 @@ using namespace std;
                 Usuarios_Tree->recorridoPreOrder(Usuarios_Tree->root);
             }
             else if(operation.attribute("ID") == "8"){
+
                 cout<<"Se pidio cargar la metadata en arboles con las canciones"<<endl;
                 JSON_Handler SongsCharger;
                 SongsCharger.ChargeSongsNameOnTree(SongsNameTree);
@@ -175,8 +176,74 @@ using namespace std;
 
                 sendMessage(handler.getUsersName(UserName));
 
-
+                sendMessage("finished");
             }
+            else if(operation.attribute("ID") == "11"){
+
+                cout<<"Se pidio buscar los canciones con search"<<endl;
+                QDomNode n = operation.firstChild();
+                QDomElement SearchedElement = n.toElement();
+
+                QString searched = SearchedElement.firstChild().toText().data();
+
+                if(!QDir("Metadata").exists()){
+                    sendMessage("No se encontraron resultados");
+                }
+                else{
+                    QDir dir(QDir::currentPath() + "/Metadata");
+
+                        qDebug() << "Scanning(Search): " << dir.path();
+
+                        QStringList fileList = dir.entryList();
+                        for (int i=0; i < fileList.count(); i++)
+                        {
+                            if( fileList[i] != "." && fileList[i] != ".."){
+
+                                qDebug() << "Song for search Found: " << fileList[i];
+
+                                QString file_contend;
+                                QFile file;
+                                file.setFileName(QDir::currentPath() + "/Metadata/" + fileList[i]);
+                                file.open(QIODevice::ReadOnly | QIODevice::Text);
+                                file_contend = file.readAll();
+                                file.close();
+                                cout<< file_contend.toStdString()<<endl;
+                                 QJsonDocument JsonDocument = QJsonDocument::fromJson(file_contend.toUtf8());
+                                 QJsonObject sett2 = JsonDocument.object();
+                                 QJsonValue NameValue = sett2.value(QString("Nombre"));
+                                 cout<< NameValue.toString().toStdString()<<endl;
+
+                                 QJsonValue GeneroValue = sett2.value(QString("Genero"));
+                                 cout<< GeneroValue.toString().toStdString()<<endl;
+
+                                 QJsonValue ArtistaValue = sett2.value(QString("Artista"));
+                                 cout<< ArtistaValue.toString().toStdString()<<endl;
+
+
+                                 QJsonValue AlbumValue = sett2.value(QString("Album"));
+                                 cout<< AlbumValue.toString().toStdString()<<endl;
+
+                                 QJsonValue YearValue = sett2.value(QString("Year"));
+                                 cout<< YearValue.toString().toStdString()<<endl;
+
+                                 QJsonValue LetraValue = sett2.value(QString("Letra"));
+                                 cout<< LetraValue.toString().toStdString()<<endl;
+
+                                 if(NameValue.toString() == searched ||GeneroValue.toString() == searched || ArtistaValue.toString() == searched || AlbumValue.toString() == searched ||
+                                         YearValue.toString() == searched || LetraValue.toString() == searched){
+                                     sendMessage(NameValue.toString());
+                                 }
+
+                            }
+
+                        }
+                        QTest::qSleep (50);
+                        sendMessage("finished");
+                        qDebug()<<"---------FINISHED-------";
+
+                }
+            }
+
         }
     }
     void Server::sendMetadata(QString songname){

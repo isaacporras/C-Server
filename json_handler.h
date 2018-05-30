@@ -7,6 +7,7 @@ using namespace std;
 #include <QDir>
 #include <QDebug>
 #include <usersdb_tree.h>
+#include <server.h>
 #include <btree.h>
 
 class JSON_Handler
@@ -18,6 +19,7 @@ public:
     static void ChargeSongsNameOnTree(BTree *tree);
     void writeOnJSON_Songs(QString Nombre, QString Genero,QString Artista,QString Album, QString Year, QString Lyrics, QString Playlist);
     QString getUsersName(QString username);
+
 };
 
 #endif // JSON_HANDLER_H
