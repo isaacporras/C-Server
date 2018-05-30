@@ -6,7 +6,8 @@
 #include <QDomDocument>
 #include <json_handler.h>
 
-#include <QTest>
+//#include <QTest>
+#include <QThread>
 #include <string>
 using namespace std;
 
@@ -100,14 +101,14 @@ using namespace std;
                 while(i < list.size())
 
                 {
-                    QTest::qSleep (100);
+                    QThread::msleep (100);
                     cout<<"Playlist name: "<<list.at(i).toStdString()<<endl;
 
                     sendMessage(list.at(i));
                     i = i + 1;
 
                 }
-                QTest::qSleep (100);
+                QThread::msleep (100);
                 cout<<"finished"<<endl;
                 sendMessage("finished");
                 }
@@ -237,7 +238,7 @@ using namespace std;
                             }
 
                         }
-                        QTest::qSleep (50);
+                        QThread::msleep (50);
                         sendMessage("finished");
                         qDebug()<<"---------FINISHED-------";
                 }
@@ -286,32 +287,32 @@ using namespace std;
          QJsonValue NameValue = sett2.value(QString("Nombre"));
          cout<< NameValue.toString().toStdString()<<endl;
          sendMessage(NameValue.toString());
-         QTest::qSleep (50);
+         QThread::msleep (50);
 
          QJsonValue Generovalue = sett2.value(QString("Genero"));
          cout<< "Genero:"<<Generovalue.toString().toStdString()<<endl;
          sendMessage(Generovalue.toString());
-         QTest::qSleep (50);
+         QThread::msleep (50);
 
          QJsonValue Artistavalue = sett2.value(QString("Artista"));
          cout<<"Artista:"<< Artistavalue.toString().toStdString()<<endl;
          sendMessage(Artistavalue.toString());
-         QTest::qSleep (50);
+         QThread::msleep (50);
 
          QJsonValue Albumvalue = sett2.value(QString("Album"));
          cout<<"Album:"<< Albumvalue.toString().toStdString()<<endl;
          sendMessage(Albumvalue.toString());
-         QTest::qSleep (50);
+         QThread::msleep (50);
 
          QJsonValue YearValue = sett2.value(QString("Year"));
          cout<< "Year:"<<YearValue.toString().toStdString()<<endl;
          sendMessage(YearValue.toString());
-         QTest::qSleep (100);
+         QThread::msleep (100);
 
          QJsonValue LetraValue = sett2.value(QString("Letra"));
          cout<< "Letra:"<<LetraValue.toString().toStdString()<<endl;
          sendMessage(LetraValue.toString());
-         QTest::qSleep (150);
+         QThread::msleep (150);
 
        qDebug()<<"---------FINISHED-------";
        sendMessage("finished");
@@ -329,13 +330,13 @@ using namespace std;
             for (int i=0; i < fileList.count(); i++)
             {
                 if( fileList[i] != "." && fileList[i] != ".."){
-                    QTest::qSleep (50);
+                    QThread::msleep (50);
                     qDebug()<<"---------Playlist Start-------";
                     sendMessage("PlayList Start");
-                    QTest::qSleep (50);
+                    QThread::msleep (50);
                     qDebug() << "PlaylistFound: " << fileList[i];
                     sendMessage(fileList[i]);
-                    QTest::qSleep (50);
+                    QThread::msleep (50);
                     QString newPath = QString("%1/%2").arg(dir.absolutePath()).arg(fileList.at(i));
                     QDir dirSongs(newPath);
                     QStringList SongsList = dirSongs.entryList();
@@ -343,19 +344,19 @@ using namespace std;
 
                         if(SongsList[j] != "." && SongsList[j]!= ".."){
                             qDebug()<<"---------Song Start-------";
-                            QTest::qSleep (50);
+                            QThread::msleep (50);
                             sendMessage(SongsList[j]);
-                            QTest::qSleep (50);
+                            QThread::msleep (50);
                             qDebug()<<"Las canciones son:" <<SongsList[j];
                             qDebug()<<"---------Song Start-------";
                         }
 
                     }
 
-                    QTest::qSleep (50);
+                    QThread::msleep (50);
                     qDebug()<<"---------Playlist End-------";
                     sendMessage("PlayList End");
-                    QTest::qSleep (50);
+                    QThread::msleep (50);
 
 
                 }
@@ -375,9 +376,9 @@ using namespace std;
         ///
 
         int counter = 0;
-        if (counter1 != "0"){
-            counter = counter1.toInt();
-        }
+        if (counter1 != "0" && counter1 != "t"){
+                    counter = counter1.toInt();
+                }
 
         string messageRecived = song.toStdString();
 
@@ -402,6 +403,20 @@ using namespace std;
             return;
         }
 
+        int size = file.size();
+                int minutos = 0;
+                int segundos = size/32000;
+                while (segundos >= 60){
+                    minutos++;
+                    segundos -= 60;
+                }
+                if (counter1 == "t"){
+                    string str = to_string(minutos).append(to_string(segundos));
+                    QString Qstr = QString::fromStdString(str);
+                    sendMessage(Qstr);
+                }
+                else{
+
         QByteArray array = file.readAll();
 
         QString information = array.mid(35190*counter,36000).toBase64().constData();
@@ -411,7 +426,7 @@ using namespace std;
         /// El XML a enviar (information) debe contener el chunk de bytes para ser reproducido en el servidor.
         ///
 
-        sendMessage(information);
+        sendMessage(information);}
 
         /*QString str = QString::fromUtf8(messageRecived.c_str());
         client->write(("I've have recieved the message:" + str ).toUtf8());*/
